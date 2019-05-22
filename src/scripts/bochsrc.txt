@@ -1,0 +1,22 @@
+megs: 64
+
+#filename of ROM images
+romimage: file=/usr/local/share/bochs/BIOS-bochs-latest
+vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest
+
+#What disk images will be used
+#floppya: 1_44=boot.bin, status=inserted
+
+#Choose the boot disk
+boot: disk
+
+ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
+ata0-master: type=disk, path="disk.img", mode=flat, cylinders=20, heads=16, spt=63
+
+#Where do we send log messages?
+#log: bochsout.log
+
+#disable the mouse
+mouse: enabled=0
+
+keyboard_mapping: enabled=1, map=/usr/local/share/bochs/keymaps/x11-pc-us.map
