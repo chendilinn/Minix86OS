@@ -32,7 +32,7 @@ head.bin:
 
 .PHONY:clean
 clean:
-	rm -f boot/*.bin
+	rm -f boot/*.bin boot/*.o
 
 .PHONY:bochs
 bochs:
