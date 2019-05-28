@@ -5,7 +5,9 @@ C_OBJECTS = $(patsubst %.c, %.o, $(C_SOURCES))
 HEAD_SOURCES = $(shell find boot -name "*.s")
 HEAD_BINARY = $(patsubst %.s, %.bin, $(HEAD_SOURCES))
 H_SOURCES = $(shell find . -name "*.h")
+ROOT_DIR = $(shell pwd)
 
+MAKE = make
 CC = gcc
 LD = ld
 ASM = nasm
@@ -14,11 +16,11 @@ C_FLAGS = -c -Wall -m32 -ggdb -gstabs+ -nostdinc -fno-builtin -fno-stack-protect
 LD_FLAGS = -T scripts/kernel.ld -m elf_i386 -nostdlib
 ASM_FLAGS = -f elf -g -F stabs
 
-all:$(HEAD_BINARY) updateImg
+disk.img:head.bin
+	dd if=boot/head.bin of=disk.img conv=notrunc
 
-updateImg:$(HEAD_BINARY)
-	@dd if=boot/bootsect.bin of=disk.img conv=notrunc
-	@dd if=boot/loader.bin of=disk.img seek=1 conv=notrunc
+head.bin:
+	$(MAKE) -C boot
 
 %.o:%.c
 	@echo "$(CC)\t$@\t<= $<"
@@ -30,7 +32,7 @@ updateImg:$(HEAD_BINARY)
 
 .PHONY:clean
 clean:
-	rm -f $(HEAD_BINARY)
+	rm -f boot/*.bin
 
 .PHONY:bochs
 bochs:
