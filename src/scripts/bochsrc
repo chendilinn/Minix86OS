@@ -1,4 +1,4 @@
-megs: 64
+megs: 32
 
 #filename of ROM images
 romimage: file=/usr/local/share/bochs/BIOS-bochs-latest

@@ -1,7 +1,7 @@
 section bootsect vstart=0x7c00
 LOADER_ADDR equ 0x7e00 ;loader.bin加载的物理地址
 LOADER_SECT equ 1      ;loader.bin在硬盘中的起始扇区
-LOADER_SIZE equ 100    ;loader.bin的大小,扇区(512byte)为单位
+LOADER_SIZE equ 50    ;loader.bin的大小,扇区(512byte)为单位
 start:
     mov ax,cs
     mov ds,ax

@@ -23,7 +23,7 @@ get_mem_loop:
     jnz get_mem_loop
 
 get_mem_failed:
-	jmp $
+	;jmp $
 
 	in al,0x92 		;打开A20
 	or al,0x02
@@ -65,9 +65,9 @@ ards_num:
 	dd ards_num_
 
 ards_buf_:
-	times 200 db 0x88
+	times 200 db 0
 ards_num_:
-	db 5
+	db 0
 
 align 16
 gdt_base:
