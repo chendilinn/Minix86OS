@@ -5,18 +5,18 @@ SECTIONS
 	.text :
 	{
 		*(.text)
-		. = ALIGN(4096);
+		. = ALIGN(16);
 	}
 	.data :
 	{
 		*(.data)
 		*(.rodata)
-		. = ALIGN(4096);
+		. = ALIGN(16);
 	}
 	.bss :
 	{
 		*(.bss)
-		. = ALIGN(4096);
+		. = ALIGN(16);
 	}
 
 	/DISCARD/ : { *(.stab) *(.stabstr) *(.comment) *(.eh_frame) }

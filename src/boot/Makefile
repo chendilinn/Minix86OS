@@ -10,7 +10,7 @@ head.bin:bootsect.bin loader.bin
 	@echo "target\t$@\t<= $^"
 	@cat bootsect.bin loader.bin > head.bin
 
-loader.bin:loaders.o loaderc.o
+loader.bin:loaders.o loaderc.o loader.ld
 	@echo "$(LD)\t$@\t<= $^"
 	@$(LD) $(LD_FLAGS) $^ -o $@
 

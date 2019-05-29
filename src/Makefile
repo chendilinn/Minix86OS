@@ -41,3 +41,9 @@ bochs:
 .PHONY:qemu
 qemu:
 	qemu-system-i386 -hda disk.img
+
+.PHONY:debug
+debug:
+	qemu-system-i386 -hda disk.img -s -S &
+	sleep 1
+	gdb -x scripts/gdbinit
