@@ -6,21 +6,24 @@ extern loader_main
 [bits 16]
 
 _start:
-# 	mov ax,cs	;get mem
-#     mov ds,ax
-#     mov es,ax
-#     xor ebx,ebx
-#     mov edx,0x534d4150
-#     mov di,ards_buf
-# get_mem_loop:
-#     mov eax,0x0000e820
-#     mov ecx,0
-#     int 0x15
-#     ;jc get_mem_failed
-#     add di,cx
-#     inc byte [ards_num]
-#     cmp ebx,0
-#     jnz get_mem_loop
+	mov ax,cs	;get mem
+    mov ds,ax
+    mov es,ax
+    xor ebx,ebx
+    mov edx,0x534d4150
+    mov di,ards_buf_
+get_mem_loop:
+    mov eax,0x0000e820
+    mov ecx,0
+    int 0x15
+    jc get_mem_failed
+    add di,cx
+    inc byte [ards_num_]
+    cmp ebx,0
+    jnz get_mem_loop
+
+get_mem_failed:
+	jmp $
 
 	in al,0x92 		;打开A20
 	or al,0x02
@@ -55,9 +58,15 @@ flush:
 	jmp $
 
 align 16
+
 ards_buf:
-	times 200 db 0
+	dd ards_buf_
 ards_num:
+	dd ards_num_
+
+ards_buf_:
+	times 200 db 0x88
+ards_num_:
 	db 5
 
 align 16

@@ -1,16 +1,16 @@
 #include "loaderc.h"
 
 static uint16_t *video_memory = (uint16_t *)0xb8000;
-static uint16_t pos_x = 0; //equ 0 can use bss seg,
-static uint16_t pos_y = 0;
+static uint16_t pos_x = 1; //不初始化为0是因为，为0的全局变量在bss段中，链接为二进制文件时，bss段就没了
+static uint16_t pos_y = 1;
 
 void console_putc(char c)
 {
 	if (c == '\n') {
-		pos_x = 0;
+		pos_x = 1;
 		pos_y++;
 	} else if (c >= ' ') {
-		video_memory[pos_y*80 + pos_x] = 0x0700 | c;
+		video_memory[(pos_y-1)*80 + (pos_x-1)] = 0x0700 | c;
 		pos_x++;
 	}
 }
@@ -74,18 +74,16 @@ void console_puts(char *str)
 
 void show_mem()
 {
-	ards_t *p_mem = ards_buf;
-	ards_t *p_mem1 = (ards_t *)0x1234;
-	uint8_t num = *ards_num;
-	//console_puthex((uint32_t)p_mem1);
-	console_puts("\nmemory map:\n");
+	ards_t *p_mem = (ards_t *)ards_buf;
+	uint8_t num = *((uint8_t *)ards_num);
+	console_puts("memory map:\n");
 	for(int i=0; i<num; i++) {
 		console_puts("base: 0x");
 		console_puthex(p_mem->base_addr_high);
 		console_puthex(p_mem->base_addr_low);
 		console_puts(" size:0x");
-		console_puthex(p_mem->base_addr_high);
-		console_puthex(p_mem->base_addr_low);
+		console_puthex(p_mem->length_high);
+		console_puthex(p_mem->length_low);
 		console_puts(" type:");
 		console_putdec(p_mem->type);
 		console_puts("\n");
@@ -98,4 +96,11 @@ void loader_main()
 	//console_puts("start loader\n");
 	show_mem();
 	//console_putc('5');
+
+	// ards_t *p_mem = (ards_t *)ards_buf;
+	// uint32_t a = (uint32_t)p_mem;
+	// uint8_t num = *((uint8_t *)ards_num);
+	// console_puthex(ards_buf);
+	// console_putc('\n');
+	// console_puthex(ards_num);
 }
