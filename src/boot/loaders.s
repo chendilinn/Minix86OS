@@ -21,9 +21,14 @@ get_mem_loop:
     inc byte [ards_num_]
     cmp ebx,0
     jnz get_mem_loop
+    jmp get_mem_ok
 
 get_mem_failed:
-	;jmp $
+	mov byte [gs:0x00],'M'
+	mov byte [gs:0x02],'E'
+	jmp $
+
+get_mem_ok:
 
 	in al,0x92 		;打开A20
 	or al,0x02

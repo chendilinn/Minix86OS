@@ -20,8 +20,6 @@ void console_puthex(uint32_t n)
 	int tmp;
 	char noZeroes = 1;
 
-	//console_puts("0x");
-
 	int i;
 	for (i = 28; i >= 0; i -= 4) {
 		tmp = (n >> i) & 0xF;
@@ -85,7 +83,7 @@ void show_mem()
 		console_puthex(p_mem->length_low);
 		console_puts("(");
 		console_putdec(p_mem->length_low/1024);
-		console_puts(")kib");
+		console_puts("Kb)");
 		console_puts(" type:");
 		console_putdec(p_mem->type);
 		console_puts("\n");
@@ -95,16 +93,5 @@ void show_mem()
 
 void loader_main()
 {
-	//console_puts("start loader\n");
 	show_mem();
-	//console_putc('5');
-
-	//console_puts("memory map:\n");
-
-	// ards_t *p_mem = (ards_t *)ards_buf;
-	// uint32_t a = (uint32_t)p_mem;
-	// uint8_t num = *((uint8_t *)ards_num);
-	// console_puthex(ards_buf);
-	// console_putc('\n');
-	// console_puthex(ards_num);
 }
