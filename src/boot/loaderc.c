@@ -77,21 +77,45 @@ void show_mem()
 	uint8_t num = *((uint8_t *)ards_num);
 	console_puts("Memory distribution:\n");
 	for(int i=0; i<num; i++) {
-		console_puts("base: 0x");
-		console_puthex(p_mem->base_addr_low);
-		console_puts(" size:0x");
-		console_puthex(p_mem->length_low);
-		console_puts("(");
-		console_putdec(p_mem->length_low/1024);
-		console_puts("Kb)");
-		console_puts(" type:");
-		console_putdec(p_mem->type);
-		console_puts("\n");
+		console_puts("base: 0x");console_puthex(p_mem->base_addr_low);
+		console_puts(" size:0x");console_puthex(p_mem->length_low);console_puts("(");console_putdec(p_mem->length_low/1024);console_puts("Kb)");
+		console_puts(" type:");console_putdec(p_mem->type);console_puts("\n");
 		p_mem++;
+	}
+}
+
+void init_page()
+{
+	//clear PDE
+	uint32_t *page_dir_table = (uint32_t *)PAGE_DIR_TABLE;
+	for(int i=0; i<4096; i++) {
+		page_dir_table[i] = 0;
+	}
+	//create PDE
+	page_dir_table[0] = (PAGE_DIR_TABLE+0x1000) | PG_US_U | PG_RW_W | P_G; //virtuala address 0x0~0x3fffff(4M) --- Physical address 0x0~0x3fffff(4M)
+
+	page_dir_table[768] = (PAGE_DIR_TABLE+0x1000) | PG_US_U | PG_RW_W | P_G; //virtuala address 0xc0000000~0xc03fffff(4M) --- Physical address 0x0~0x3fffff(4M)
+
+	page_dir_table[1023] = PAGE_DIR_TABLE | PG_US_U | PG_RW_W | P_G;//The last one, point to self(PDE)
+
+	//create PTE
+	uint32_t *page_table = (uint32_t *)(PAGE_DIR_TABLE+0x1000);
+	uint32_t page_tmp = PG_US_U | PG_RW_W | P_G;
+	for(int i=0; i<256; i++) {	//low 1M/4k = 256
+		page_table[i] = page_tmp;
+		page_tmp += 4096;
+	}
+
+	//create other kernel PDE
+	page_tmp = (PAGE_DIR_TABLE+0x2000) | PG_US_U | PG_RW_W | P_G;
+	for(int i=769; i<1023; i++) {	//
+		page_dir_table[i] = page_tmp;
+		page_tmp += 4096;
 	}
 }
 
 void loader_main()
 {
 	show_mem();
+	init_page();
 }

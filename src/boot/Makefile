@@ -22,6 +22,6 @@ loaders.o:loaders.s
 	@echo "$(ASM)\t$@\t<= $^"
 	@$(ASM) $(ASM_FLAGS) $< -o $@
 
-loaderc.o:loaderc.c
+loaderc.o:loaderc.c loaderc.h
 	@echo "$(CC)\t$@\t<= $^"
 	@$(CC) $(C_FLAGS) $< -o $@
