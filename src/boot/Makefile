@@ -2,7 +2,7 @@ CC = gcc
 LD = ld
 ASM = nasm
 
-C_FLAGS = -c -Wall -m32 -ggdb -gstabs+ -nostdinc -fno-builtin -fno-stack-protector
+C_FLAGS = -c -Wall -m32 -fno-pic -nostdinc -fno-builtin -fno-stack-protector
 LD_FLAGS = -T loader.ld -m elf_i386 --oformat binary -nostdlib
 ASM_FLAGS = -f elf
 
