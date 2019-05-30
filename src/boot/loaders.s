@@ -2,6 +2,7 @@ section .text
 global ards_buf
 global ards_num
 extern loader_main
+extern test_virtual_mem
 
 [bits 16]
 
@@ -59,6 +60,22 @@ flush:
 	mov gs,ax
 
 	call loader_main
+
+	sgdt [gdt_ptr]
+
+	mov eax,0x10000
+	mov cr3,eax
+
+	mov eax,cr0
+	or eax,0x80000000
+	mov cr0,eax
+
+	mov ebx,[gdt_ptr + 2]
+
+
+	lgdt [gdt_ptr]
+
+	call test_virtual_mem
 
 	jmp $
 
