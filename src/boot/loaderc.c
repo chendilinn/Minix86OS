@@ -36,7 +36,7 @@ void init_page()
 	//create PTE
 	uint32_t *page_table = (uint32_t *)(PAGE_DIR_TABLE+0x1000);
 	uint32_t page_tmp = PG_US_U | PG_RW_W | PG_P;
-	for(int i=0; i<1024; i++) {	//low 1M/4k = 256
+	for(int i=0; i<1024; i++) {	//low 4M/4k = 1024
 		page_table[i] = page_tmp;
 		page_tmp += 4096;
 	}
@@ -70,6 +70,7 @@ void memcpy(uint8_t *src,uint8_t *dst,uint32_t size)
 
 void load_kernel()
 {
+	printf("Loading...\n");
 	Elf32_Ehdr *pHeader = (Elf32_Ehdr *)KERNEL_ADDR;
 	if(ET_EXEC != pHeader->e_type) {
 		printf("Kernel is not an executable!");
@@ -91,4 +92,5 @@ void load_kernel()
 		memcpy(pSrc,pDst,dwSize);
 		dwPhOff += wPhSize;
 	}
+	printf("The kernel is loaded and jumped into the kernel.\n");
 }

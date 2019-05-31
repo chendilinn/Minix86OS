@@ -1,3 +1,5 @@
+//char buf[512];
+
 int kernel_main()
 {
 	while(1) {

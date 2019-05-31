@@ -85,8 +85,7 @@ flush:
 	;call test_virtual_mem	;测试分页是否成功
 	call load_kernel		;此时kernel已经复制到物理0x300000(3M)处,load_kernel解析kernel.elf到0x100000处
 
-	mov eax,0xc0100000
-	jmp eax
+	jmp 0x0008:0xc0100000	;转到kernel
 
 read_kernel_to_mem:
     mov dx,0x1f2
