@@ -33,7 +33,7 @@ get_mem_loop:
 get_mem_failed:
 	mov byte [gs:0x00],'M'
 	mov byte [gs:0x02],'E'
-	jmp $
+	;jmp $
 
 get_mem_ok:
 
@@ -49,10 +49,14 @@ get_mem_ok:
 	or eax,0x01
 	mov cr0,eax
 
+	;jmp $
+
 	jmp dword 0x0008:flush
 
 [bits 32]
 flush:
+
+	;jmp $
 
 	mov ax,0x0010
 	mov ds,ax
