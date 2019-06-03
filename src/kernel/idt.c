@@ -92,10 +92,8 @@ static void exception_init(void) {            // 完成一般中断处理函数�
    int i;
    for (i = 0; i < IDT_DESC_CNT; i++) {
 
-/* idt_table数组中的函数是在进入中断后根据中断向量号调用的,
- * 见kernel/kernel.S的call [idt_table + %1*4] */
-      idt_table[i] = general_intr_handler;          // 默认为general_intr_handler。
-                         // 以后会由register_handler来注册具体处理函数。
+      idt_table[i] = general_intr_handler;        // 默认为general_intr_handler。
+                                                // 以后会由register_handler来注册具体处理函数。
       intr_name[i] = "unknown";               // 先统一赋值为unknown
    }
    intr_name[0] = "#DE Divide Error";
