@@ -1,5 +1,6 @@
 #ifndef _PANIC_H
 #define _PANIC_H
+#include <printk.h>
 
 #define panic(format, ...) \
 { \

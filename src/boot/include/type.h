@@ -29,7 +29,7 @@ extern ards_t *ards_buf;
 extern uint8_t *ards_num;
 
 /*elf文件数据结构*/
-#define KERNEL_ADDR 0x300000
+#define KERNEL_ADDR 0x200000
 typedef unsigned short 	Elf32_Half;
 typedef unsigned int 	Elf32_Word;
 typedef unsigned int 	Elf32_Addr;

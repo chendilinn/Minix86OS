@@ -3,6 +3,10 @@
 #include <idt.h>
 #include <panic.h>
 #include <printk.h>
+#include <memory.h>
+
+char a[1024];
+char b[1024];
 
 void init_all()
 {
@@ -14,7 +18,7 @@ void init_all()
 int kernel_main()
 {
 	init_all();
-	assert(1==2);
-	asm volatile ("sti");
+	mem_init();
+	//asm volatile ("sti");
 	while(1);
 }

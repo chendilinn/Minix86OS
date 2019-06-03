@@ -8,6 +8,10 @@ S_SOURCES += $(shell find ./lib -name "*.s")
 C_SOURCES += $(shell find ./device -name "*.c")
 S_SOURCES += $(shell find ./device -name "*.s")
 
+C_SOURCES += $(shell find ./mm -name "*.c")
+S_SOURCES += $(shell find ./mm -name "*.s")
+
+
 S_OBJECTS = $(patsubst %.s, %.o, $(S_SOURCES))
 C_OBJECTS = $(patsubst %.c, %.o, $(C_SOURCES))
 
@@ -15,7 +19,8 @@ CC = gcc
 LD = ld
 ASM = nasm
 
-C_FLAGS = -c -Wall -m32 -fno-pic -nostdinc -fno-builtin -fno-stack-protector -I lib/include -I kernel/include -I device/include
+C_FLAGS = -c -Wall -m32 -fno-pic -nostdinc -fno-builtin -fno-stack-protector \
+		  -I lib/include -I kernel/include -I device/include -I mm/include
 LD_FLAGS = -T scripts/kernel.ld -m elf_i386 -nostdlib
 ASM_FLAGS = -f elf
 

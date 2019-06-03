@@ -5,7 +5,7 @@ extern kernel_main
 
 _start:
 
-	mov esp, 0xc0400000	;内核空间顶部
+	mov esp, 0xc0090000	;内核空间顶部
 
 	mov ebp, 0
 

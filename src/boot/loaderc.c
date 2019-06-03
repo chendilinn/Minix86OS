@@ -12,7 +12,7 @@ void show_mem()
 			printf("base:0x%08x length:%08x(%dKb) available\n", p_mem->base_addr_low, p_mem->length_low, p_mem->length_low/1024, p_mem->type);
 		}
 		else {
-			printf("base:0x%08x length:%08x(%dKb) Unavailable\n", p_mem->base_addr_low, p_mem->length_low, p_mem->length_low/1024, p_mem->type);
+			//printf("base:0x%08x length:%08x(%dKb) Unavailable\n", p_mem->base_addr_low, p_mem->length_low, p_mem->length_low/1024, p_mem->type);
 		}
 		p_mem++;
 	}
@@ -27,9 +27,11 @@ void init_page()
 		page_dir_table[i] = 0;
 	}
 	//create PDE
-	page_dir_table[0] = (PAGE_DIR_TABLE+0x1000) | PG_US_U | PG_RW_W | PG_P; //virtuala address 0x0~0x3fffff(4M) --- Physical address 0x0~0x3fffff(4M)
+	page_dir_table[0] = (PAGE_DIR_TABLE+0x1000) | PG_US_U | PG_RW_W | PG_P; //virtuala address 0x0~0x7fffff(8M) --- Physical address 0x0~0x7fffff(8M)
+	page_dir_table[1] = (PAGE_DIR_TABLE+0x2000) | PG_US_U | PG_RW_W | PG_P;
 
-	page_dir_table[768] = (PAGE_DIR_TABLE+0x1000) | PG_US_U | PG_RW_W | PG_P; //virtuala address 0xc0000000~0xc03fffff(4M) --- Physical address 0x0~0x3fffff(4M)
+	page_dir_table[768] = (PAGE_DIR_TABLE+0x1000) | PG_US_U | PG_RW_W | PG_P; //virtuala address 0xc0000000~0xc07fffff(8M) --- Physical address 0x0~0x7fffff(8M)
+	page_dir_table[769] = (PAGE_DIR_TABLE+0x2000) | PG_US_U | PG_RW_W | PG_P;
 
 	page_dir_table[1023] = PAGE_DIR_TABLE | PG_US_U | PG_RW_W | PG_P;//The last one, point to self(PDE)
 
@@ -41,12 +43,13 @@ void init_page()
 		page_tmp += 4096;
 	}
 
-	// //create other kernel PDE
-	// page_tmp = (PAGE_DIR_TABLE+0x2000) | PG_US_U | PG_RW_W | PG_P;
-	// for(int i=769; i<1023; i++) {	//
-	// 	page_dir_table[i] = page_tmp;
-	// 	page_tmp += 4096;
-	// }
+	//create other kernel PDE
+	page_table = (uint32_t *)(PAGE_DIR_TABLE+0x2000);
+	page_tmp = 0x400000 | PG_US_U | PG_RW_W | PG_P;
+	for(int i=0; i<1024; i++) {	//
+		page_table[i] = page_tmp;
+		page_tmp += 4096;
+	}
 	printf("Initialize page table completion\n");
 }
 
