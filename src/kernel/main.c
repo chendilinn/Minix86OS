@@ -14,7 +14,6 @@ void init_all()
 int kernel_main()
 {
 	init_all();
-	log("kernel init done: id=%ld",123456);
 	assert(1==2);
 	asm volatile ("sti");
 	while(1);
