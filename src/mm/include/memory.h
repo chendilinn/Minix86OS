@@ -16,6 +16,12 @@ typedef struct mm_pool {
    uint32_t pool_size;		 // 本内存池字节容量
 }mm_pool;
 
+enum pool_flags {
+	PF_KERNEL = 0,
+	PF_USER,
+}
+
 extern mm_pool kernel_pool, user_pool;
 void mem_init(void);
+
 #endif

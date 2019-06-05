@@ -45,7 +45,7 @@ void init_page()
 
 	//create other kernel PDE
 	page_table = (uint32_t *)(PAGE_DIR_TABLE+0x2000);
-	page_tmp = 0x400000 | PG_US_U | PG_RW_W | PG_P;
+	page_tmp = PAGE_DIR_TABLE | PG_US_U | PG_RW_W | PG_P;
 	for(int i=0; i<1024; i++) {	//
 		page_table[i] = page_tmp;
 		page_tmp += 4096;

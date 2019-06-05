@@ -7,6 +7,7 @@ extern load_kernel
 extern test_virtual_mem
 
 KERNEL_ADDR equ 0x200000 ;kernel.elf加载的物理地址
+PAGE_DIR_TABLE equ 0x400000
 KERNEL_SECT equ 200      ;kernel.elf在硬盘中的起始扇区
 KERNEL_SIZE equ 200     ;kernel.elf的大小,扇区(512byte)为单位 200*512 = 100kb
 
@@ -75,7 +76,7 @@ flush:
 
 	sgdt [gdt_ptr]			;开启分页
 
-	mov eax,0x10000
+	mov eax,PAGE_DIR_TABLE
 	mov cr3,eax
 
 	mov eax,cr0

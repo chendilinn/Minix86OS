@@ -21,7 +21,7 @@ typedef struct gate_desc {
 }__attribute__((packed)) gate_desc;
 
 char* intr_name[IDT_DESC_CNT];           // 用于保存异常的名字
-intr_handler idt_table[IDT_DESC_CNT];       // 定义中断处理程序数组.在kernel.S中定义的intrXXentry只是中断处理程序的入口,最终调用的是ide_table中的处理程序
+intr_handler idt_table[IDT_DESC_CNT];    // 定义中断处理程序数组.在kernel.S中定义的intrXXentry只是中断处理程序的入口,最终调用的是ide_table中的处理程序
 
 // 静态函数声明,非必须
 static void make_idt_desc(gate_desc* p_gdesc, uint8_t attr, intr_handler function);
