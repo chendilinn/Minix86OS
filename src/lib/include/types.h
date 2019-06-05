@@ -10,4 +10,14 @@ typedef unsigned short 		uint16_t;
 typedef unsigned char 		uint8_t;
 typedef unsigned long long 	uint64_t;
 
+#define NULL 0
+
+#define PAGE_DIR_TABLE 0x400000
+#define PG_US_U	0x04
+#define PG_US_S	0x00
+#define PG_RW_R	0x00
+#define PG_RW_W	0x02
+#define PG_P_1	0x01
+#define PG_P_0	0x01
+
 #endif

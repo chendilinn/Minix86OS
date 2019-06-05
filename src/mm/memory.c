@@ -1,5 +1,7 @@
 #include <memory.h>
 #include <printk.h>
+#include <panic.h>
+#include <string.h>
 
 #define PG_SIZE 4096
 
@@ -14,7 +16,8 @@ mm_pool kernel_pool, user_pool;      // 生成内核内存池和用户内存池
 virtual_addr kernel_vaddr;	 // 此结构是用来给内核分配虚拟地址
 
 /*初始化内存池*/
-static void mem_pool_init(uint32_t all_mem) {
+static void mem_pool_init(uint32_t all_mem)
+{
    uint32_t used_mem = 0x800000;	  // 0x400000为低端4M内存
    uint32_t free_mem = all_mem - used_mem;
    uint16_t all_free_pages = free_mem / PG_SIZE;		  // 1页为4k,不管总内存是不是4k的倍数,
@@ -57,7 +60,7 @@ static void mem_pool_init(uint32_t all_mem) {
    printk("kernel_vaddr.vaddr_start:0x%x\n", kernel_vaddr.vaddr_start);
 }
 
-static void *vaddr_get(pool_flags pf, uint32_t pg_cnt)
+static void *vaddr_get(enum pool_flags pf, uint32_t pg_cnt)
 {
    int vaddr_start = 0, bit_idx_start = -1;
    uint32_t cnt = 0;
@@ -78,22 +81,106 @@ static void *vaddr_get(pool_flags pf, uint32_t pg_cnt)
    return (void *)vaddr_start;
 }
 
-uint32_t *pte_ptr(uint32_t vaddr) {
+uint32_t *pte_ptr(uint32_t vaddr)
+{
    //((vaddr & 0xffc00000) >> 10)用于索引页目录项,PTE_IDX(vaddr) * 4用于索引页表项 0x12345678
    //0001001000 1101000101 678 //0xffc048d04
    uint32_t *pte = (uint32_t *)(0xffc00000 + ((vaddr & 0xffc00000) >> 10) + PTE_IDX(vaddr) * 4);
    return pte;
 }
 
-uint32_t *pde_ptr(uint32_t vaddr) {
-
+uint32_t *pde_ptr(uint32_t vaddr)
+{
+   uint32_t *pde = (uint32_t *)(0xfffff000 + PDE_IDX(vaddr) * 4);
+   return pde;
 }
 
-static void *palloc(mm_pool *m_pool) {
+static void *palloc(mm_pool *m_pool)
+{
+   int bit_idx = bitmap_scan(&m_pool->pool_bitmap, 1);
+   if(-1 == bit_idx) {
+      return NULL;
+   }
+   log("bit_idx:%d", bit_idx);
+   bitmap_set(&m_pool->pool_bitmap, bit_idx, 1);
+   uint32_t page_phyaddr = m_pool->phy_addr_start + bit_idx * PG_SIZE;
+   return (void *)page_phyaddr;
+}
 
+static void page_table_add(void *_vaddr, void *_page_phyaddr)
+{
+   uint32_t vaddr = (uint32_t)_vaddr, page_phyaddr = (uint32_t)_page_phyaddr;
+   uint32_t *pde = pde_ptr(vaddr);
+   uint32_t *pte = pte_ptr(vaddr);
+   log("pde:%x pte:%x", pde, pte);
+   if(*pde & 0x1) { //P==1? 页目录项是否存在？
+      assert(!(*pte & 0x01));//如果页目录项和页表项都存在，则出错
+      *pte = (page_phyaddr | PG_US_U | PG_RW_W | PG_P_1);
+   }
+   else {
+      uint32_t pde_phyaddr = (uint32_t)palloc(&kernel_pool);
+      log("pde_phyaddr:%x", pde_phyaddr);
+      *pde = pde_phyaddr | PG_US_U | PG_RW_W | PG_P_1;
+      memset((void *)((int)pte & 0xfffff000), 0, PG_SIZE);
+      assert(!(*pte & 0x01));
+      *pte = page_phyaddr | PG_US_U | PG_RW_W | PG_P_1;
+   }
+}
+
+void *malloc_page(enum pool_flags pf, uint32_t pg_cnt)
+{
+   assert(pg_cnt > 0 && pg_cnt < 3840);
+   void *vaddr_start = vaddr_get(pf, pg_cnt);
+   if(NULL == vaddr_start) {
+      return NULL;
+   }
+
+   uint32_t vaddr = (uint32_t)vaddr_start;
+   uint32_t cnt = pg_cnt;
+   mm_pool *m_pool = pf & PF_KERNEL ? &kernel_pool : &user_pool;
+
+   while(cnt > 0) {
+      cnt--;
+      void *page_phyaddr = palloc(m_pool);
+      if(NULL == page_phyaddr) {
+         return NULL;
+      }
+      log("vaddr:%x phyaddr:%x", vaddr, (uint32_t)page_phyaddr);
+      page_table_add((void *)vaddr, page_phyaddr);
+      vaddr += PG_SIZE;
+   }
+   log("return vaddr:%x", (uint32_t)vaddr_start);
+   return vaddr_start;
+}
+
+void *get_kernel_pages(uint32_t pg_cnt)
+{
+   void *vaddr = malloc_page(PF_KERNEL, pg_cnt);
+   if(NULL != vaddr) {
+      memset(vaddr, 0, pg_cnt * PG_SIZE);
+   }
+   return vaddr;
 }
 
 void mem_init() {
    uint32_t mem_bytes_total = 30*1024*1024; //30M
    mem_pool_init(mem_bytes_total);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

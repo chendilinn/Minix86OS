@@ -19,6 +19,8 @@ int kernel_main()
 {
 	init_all();
 	mem_init();
+	void *addr = get_kernel_pages(4);
+	printk("addr:0x%x\n", (uint32_t)addr);
 	//asm volatile ("sti");
 	while(1);
 }

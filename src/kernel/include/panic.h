@@ -8,15 +8,14 @@
     while(1); \
 }
 
+#define assert(condition) \
+		if(!(condition)) { \
+			panic(#condition); \
+		}
+
 #ifdef NDEBUG
-	#define assert(condition) ((void)0)
 	#define log(format, ...) ((void)0)
 #else
-	#define assert(condition) \
-	if(!(condition)) { \
-		panic(#condition); \
-	}
-
 	#define log(format, ...) \
 	{ \
 	    printk("%s %d " format "\n", __FILE__, __LINE__, ##__VA_ARGS__); \

@@ -17,11 +17,13 @@ typedef struct mm_pool {
 }mm_pool;
 
 enum pool_flags {
-	PF_KERNEL = 0,
+	PF_KERNEL = 1,
 	PF_USER,
-}
+};
 
 extern mm_pool kernel_pool, user_pool;
+
 void mem_init(void);
+void *get_kernel_pages(uint32_t pg_cnt);
 
 #endif
