@@ -18,7 +18,7 @@
 #else
 	#define log(format, ...) \
 	{ \
-	    printk("%s %d " format "\n", __FILE__, __LINE__, ##__VA_ARGS__); \
+	    printk("%s\t%d\t%s\t" format "\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__); \
 	}
 #endif
 

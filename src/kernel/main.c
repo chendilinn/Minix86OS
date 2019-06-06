@@ -5,9 +5,6 @@
 #include <printk.h>
 #include <memory.h>
 
-char a[1024];
-char b[1024];
-
 void init_all()
 {
 	init_cursor();

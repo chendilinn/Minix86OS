@@ -78,6 +78,7 @@ static void *vaddr_get(enum pool_flags pf, uint32_t pg_cnt)
       //User application virtual address
    }
    vaddr_start = kernel_vaddr.vaddr_start + bit_idx_start*PG_SIZE;
+   log("vaddr:%x pf:%d", vaddr_start, pf);
    return (void *)vaddr_start;
 }
 
@@ -101,7 +102,6 @@ static void *palloc(mm_pool *m_pool)
    if(-1 == bit_idx) {
       return NULL;
    }
-   log("bit_idx:%d", bit_idx);
    bitmap_set(&m_pool->pool_bitmap, bit_idx, 1);
    uint32_t page_phyaddr = m_pool->phy_addr_start + bit_idx * PG_SIZE;
    return (void *)page_phyaddr;
@@ -109,17 +109,16 @@ static void *palloc(mm_pool *m_pool)
 
 static void page_table_add(void *_vaddr, void *_page_phyaddr)
 {
+   log("vaddr:%x paddr:%x", (uint32_t)_vaddr, (uint32_t)_page_phyaddr);
    uint32_t vaddr = (uint32_t)_vaddr, page_phyaddr = (uint32_t)_page_phyaddr;
    uint32_t *pde = pde_ptr(vaddr);
    uint32_t *pte = pte_ptr(vaddr);
-   log("pde:%x pte:%x", pde, pte);
    if(*pde & 0x1) { //P==1? 页目录项是否存在？
       assert(!(*pte & 0x01));//如果页目录项和页表项都存在，则出错
       *pte = (page_phyaddr | PG_US_U | PG_RW_W | PG_P_1);
    }
    else {
       uint32_t pde_phyaddr = (uint32_t)palloc(&kernel_pool);
-      log("pde_phyaddr:%x", pde_phyaddr);
       *pde = pde_phyaddr | PG_US_U | PG_RW_W | PG_P_1;
       memset((void *)((int)pte & 0xfffff000), 0, PG_SIZE);
       assert(!(*pte & 0x01));
@@ -129,6 +128,7 @@ static void page_table_add(void *_vaddr, void *_page_phyaddr)
 
 void *malloc_page(enum pool_flags pf, uint32_t pg_cnt)
 {
+   log("pf:%d pg_cnt:%x", pf, pg_cnt);
    assert(pg_cnt > 0 && pg_cnt < 3840);
    void *vaddr_start = vaddr_get(pf, pg_cnt);
    if(NULL == vaddr_start) {
@@ -145,16 +145,15 @@ void *malloc_page(enum pool_flags pf, uint32_t pg_cnt)
       if(NULL == page_phyaddr) {
          return NULL;
       }
-      log("vaddr:%x phyaddr:%x", vaddr, (uint32_t)page_phyaddr);
       page_table_add((void *)vaddr, page_phyaddr);
       vaddr += PG_SIZE;
    }
-   log("return vaddr:%x", (uint32_t)vaddr_start);
    return vaddr_start;
 }
 
 void *get_kernel_pages(uint32_t pg_cnt)
 {
+   log("pg_cnt:%d", pg_cnt);
    void *vaddr = malloc_page(PF_KERNEL, pg_cnt);
    if(NULL != vaddr) {
       memset(vaddr, 0, pg_cnt * PG_SIZE);
