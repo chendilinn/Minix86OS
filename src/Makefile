@@ -1,7 +1,6 @@
 C_SOURCES = $(shell find ./kernel -name "*.c")
 S_SOURCES = $(shell find ./kernel -name "*.s")
 
-
 C_SOURCES += $(shell find ./lib -name "*.c")
 S_SOURCES += $(shell find ./lib -name "*.s")
 
@@ -11,9 +10,11 @@ S_SOURCES += $(shell find ./device -name "*.s")
 C_SOURCES += $(shell find ./mm -name "*.c")
 S_SOURCES += $(shell find ./mm -name "*.s")
 
-
 S_OBJECTS = $(patsubst %.s, %.o, $(S_SOURCES))
 C_OBJECTS = $(patsubst %.c, %.o, $(C_SOURCES))
+
+RM_OBJ = $(shell find . -name "*.o")
+RM_OBJ += $(shell find . -name "*.bin")
 
 CC = gcc
 LD = ld
@@ -49,8 +50,7 @@ kernel.elf:$(S_OBJECTS) $(C_OBJECTS) scripts/kernel.ld
 
 .PHONY:clean
 clean:
-	cd boot/ && $(MAKE) clean
-	rm -f $(C_OBJECTS) $(S_OBJECTS) kernel.elf
+	rm -f $(RM_OBJ) kernel.elf
 
 .PHONY:bochs
 bochs:
